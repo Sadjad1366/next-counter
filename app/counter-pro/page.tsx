@@ -23,14 +23,19 @@ export default function CounterPage() {
 
   const resetHandler = () => {
     setIsActive(false);
-    setShowTime(initialTime)
-  }
+    setRemindedSeconds(0);
+    setShowTime(initialTime);
+  };
+
+  const StopHandler = () => {
+    setIsActive(false);
+  };
 
   const totalTime =
     showTime.hours * 3600 + showTime.minutes * 60 + showTime.seconds;
 
   useEffect(() => {
-    let timer;
+    let timer: string | number | NodeJS.Timeout | undefined;
     if (isActive) {
       timer = setInterval(() => {
         setRemindedSeconds((prev) => {
@@ -42,12 +47,14 @@ export default function CounterPage() {
         });
       }, 1000);
     }
-   if(timer) return () => clearInterval(timer)
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [isActive, remindedSeconds]);
 
   const submitHandler: SubmitEventHandler = (event) => {
     event.preventDefault();
-    setRemindedSeconds(totalTime);
+    if (remindedSeconds === 0) setRemindedSeconds(totalTime);
     setIsActive(true);
     console.log(remindedSeconds);
   };
@@ -80,11 +87,26 @@ export default function CounterPage() {
         />
         <button
           type="submit"
-          className="bg-green-400 text-white rounded-lg p-2 m-2"
+          className={
+            isActive
+              ? `bg-slate-400 text-white rounded-lg p-2 m-2`
+              : `bg-green-400 text-white rounded-lg p-2 m-2`
+          }
+          disabled={isActive}
         >
           Start
         </button>
-        <button onClick={resetHandler} className="bg-slate-400 text-white rounded-lg p-2 m-2">
+        <button
+          type="button"
+          onClick={StopHandler}
+          className="bg-red-400 text-white rounded-lg p-2 m-2"
+        >
+          Stop
+        </button>
+        <button
+          onClick={resetHandler}
+          className="bg-cyan-400 text-white rounded-lg p-2 m-2"
+        >
           Reset
         </button>
         <div>{remindedSeconds}</div>
