@@ -35,7 +35,7 @@ export default function CounterPage() {
     showTime.hours * 3600 + showTime.minutes * 60 + showTime.seconds;
 
   useEffect(() => {
-    let timer: string | number | NodeJS.Timeout | undefined;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (isActive) {
       timer = setInterval(() => {
         setRemindedSeconds((prev) => {
@@ -104,6 +104,7 @@ export default function CounterPage() {
           Stop
         </button>
         <button
+        type="button"
           onClick={resetHandler}
           className="bg-cyan-400 text-white rounded-lg p-2 m-2"
         >
