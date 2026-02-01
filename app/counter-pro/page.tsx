@@ -17,8 +17,19 @@ export default function CounterPage() {
   const [isActive, setIsActive] = useState<boolean>(false);
 
   const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event?.target;
-    setShowTime((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = event.target;
+
+    const numericValue = value === "" ? 0 : parseInt(value);
+
+    if (numericValue < 0 || isNaN(numericValue)) return;
+
+    if ((name === "minutes" || name === "seconds") && numericValue > 59) {
+      return;
+    }
+
+    if (name === "hours" && numericValue > 99) return;
+
+    setShowTime((prev) => ({ ...prev, [name]: numericValue }));
   };
 
   const resetHandler = () => {
@@ -104,7 +115,7 @@ export default function CounterPage() {
           Stop
         </button>
         <button
-        type="button"
+          type="button"
           onClick={resetHandler}
           className="bg-cyan-400 text-white rounded-lg p-2 m-2"
         >
