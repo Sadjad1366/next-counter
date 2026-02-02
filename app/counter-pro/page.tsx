@@ -1,5 +1,6 @@
 "use client";
 import { ChangeEvent, SubmitEventHandler, useEffect, useState } from "react";
+import LiquidGauge from "react-liquid-gauge";
 
 export default function CounterPage() {
   type ShowTime = {
@@ -45,6 +46,8 @@ export default function CounterPage() {
   const totalTime =
     showTime.hours * 3600 + showTime.minutes * 60 + showTime.seconds;
 
+  const percent = totalTime > 0 ? (remindedSeconds / totalTime) * 100 : 0;
+
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | undefined;
     if (isActive) {
@@ -69,59 +72,103 @@ export default function CounterPage() {
     setIsActive(true);
     console.log(remindedSeconds);
   };
+
+  const formatTime = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
   return (
-    <div className="space-x-4">
-      <form onSubmit={submitHandler}>
-        <input
-          className="border rounded-lg p-2 m-2 "
-          onChange={inputHandler}
-          type="text"
-          name="hours"
-          value={showTime.hours}
-          placeholder="00"
+    <div className="flex flex-col items-center justify-center p-8 space-y-6">
+      <div className="[&_path]:transition-all [&_path]:duration-1000 [&_path]:ease-linear">
+        <LiquidGauge
+          value={percent}
+          width={200}
+          height={200}
+          waveAnimation={isActive ? true : false}
+          waveAmplitude={isActive ? 2 : 2.5}
+          waveFrequency={isActive ? 5 : 1}
+          gradient
+          circleColor="#3b82f6"
+          waveColor="#60a5fa"
+          textSize={1}
+          textRenderer={() => (
+            <tspan
+              className="fill-slate-700 font-mono font-bold"
+              fontSize="24px"
+              dy="0.3em"
+            >
+              {formatTime(remindedSeconds)}
+            </tspan>
+          )}
         />
-        <input
-          className="border rounded-lg p-2 m-2 "
-          onChange={inputHandler}
-          type="text"
-          name="minutes"
-          value={showTime.minutes}
-          placeholder="00"
-        />
-        <input
-          className="border rounded-lg p-2 m-2 "
-          onChange={inputHandler}
-          type="text"
-          name="seconds"
-          value={showTime.seconds}
-          placeholder="00"
-        />
-        <button
-          type="submit"
-          className={
-            isActive
-              ? `bg-slate-400 text-white rounded-lg p-2 m-2`
-              : `bg-green-400 text-white rounded-lg p-2 m-2`
-          }
-          disabled={isActive}
-        >
-          Start
-        </button>
-        <button
-          type="button"
-          onClick={StopHandler}
-          className="bg-red-400 text-white rounded-lg p-2 m-2"
-        >
-          Stop
-        </button>
-        <button
-          type="button"
-          onClick={resetHandler}
-          className="bg-cyan-400 text-white rounded-lg p-2 m-2"
-        >
-          Reset
-        </button>
-        <div>{remindedSeconds}</div>
+      </div>
+
+      <form
+        onSubmit={submitHandler}
+        className="flex flex-col items-center space-y-4"
+      >
+        <div className="flex space-x-2">
+          <input
+            className="w-20 border-2 border-slate-200 rounded-lg p-3 text-center"
+            onChange={inputHandler}
+            type="text"
+            name="hours"
+            value={showTime.hours}
+            placeholder="HH"
+          />
+          <span className="text-2xl self-center">:</span>
+          <input
+            className="w-20 border-2 border-slate-200 rounded-lg p-3 text-center"
+            onChange={inputHandler}
+            type="text"
+            name="minutes"
+            value={showTime.minutes}
+            placeholder="MM"
+          />
+          <span className="text-2xl self-center">:</span>
+          <input
+            className="w-20 border-2 border-slate-200 rounded-lg p-3 text-center"
+            onChange={inputHandler}
+            type="text"
+            name="seconds"
+            value={showTime.seconds}
+            placeholder="SS"
+          />
+        </div>
+
+        <div className="flex space-x-2">
+          <button
+            type="submit"
+            className={`px-6 py-2 rounded-lg font-semibold text-white transition-colors ${
+              isActive
+                ? "bg-slate-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600"
+            }`}
+            disabled={isActive}
+          >
+            {remindedSeconds > 0 && !isActive ? "Resume" : "Start"}
+          </button>
+
+          <button
+            type="button"
+            onClick={StopHandler}
+            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition"
+          >
+            Stop
+          </button>
+
+          <button
+            type="button"
+            onClick={resetHandler}
+            className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg font-semibold"
+          >
+            Reset
+          </button>
+        </div>
       </form>
     </div>
   );
