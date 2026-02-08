@@ -70,7 +70,6 @@ export default function CounterPage() {
     event.preventDefault();
     if (remindedSeconds === 0) setRemindedSeconds(totalTime);
     setIsActive(true);
-    console.log(remindedSeconds);
   };
 
   const formatTime = (totalSeconds: number) => {
@@ -82,7 +81,7 @@ export default function CounterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 space-y-6">
+    <div className="w-100 flex flex-col items-center justify-center p-8 space-y-6 mx-auto">
       <div className="[&_path]:transition-all [&_path]:duration-1000 [&_path]:ease-linear">
         <LiquidGauge
           value={percent}
